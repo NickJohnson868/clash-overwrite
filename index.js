@@ -21,6 +21,8 @@ const customDomainRules = [
   "DOMAIN-SUFFIX,gemini.google.com,国外AI",
   "DOMAIN-SUFFIX,hutaocards.com,直连",
   "DOMAIN-SUFFIX,publicvm.com,直连",
+  "DOMAIN-SUFFIX,worldquantbrain.com,直连",
+  "DOMAIN-SUFFIX,biglongxia.com,直连",
   "IP-CIDR,8.148.247.44/32,直连,no-resolve"
 ];
 
