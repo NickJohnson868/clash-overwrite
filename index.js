@@ -198,7 +198,7 @@ const SERVICE_DEFINITIONS = [
     rules: ["DOMAIN-SUFFIX,chatgpt.com,国外AI", "RULE-SET,ai,国外AI"],
     name: "国外AI",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/ChatGPT.png",
-    url: "http://www.gstatic.com/generate_204",
+    url: "https://chat.openai.com/cdn-cgi/trace",
     ruleProvider: {
       key: "ai",
       config: {
@@ -216,14 +216,14 @@ const SERVICE_DEFINITIONS = [
     rules: "GEOSITE,google,谷歌服务",
     name: "谷歌服务",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Google_Search.png",
-    url: "http://www.google.com/generate_204",
+    url: "https://www.google.com/generate_204",
   },
   {
     key: "microsoft",
     rules: ["GEOSITE,microsoft@cn,国内网站", "GEOSITE,microsoft,微软服务"],
     name: "微软服务",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Microsoft.png",
-    url: "http://www.msftconnecttest.com/connecttest.txt",
+    url: "https://www.msftconnecttest.com/connecttest.txt",
   },
 
   // ── 国内 / 外网 / 广告 ──────────────────────────────
@@ -232,7 +232,7 @@ const SERVICE_DEFINITIONS = [
     rules: ["GEOIP,CN,国内网站,no-resolve", "GEOSITE,CN,国内网站"],
     name: "国内网站",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/StreamingCN.png",
-    url: "http://wifi.vivo.com.cn/generate_204",
+    url: "https://wifi.vivo.com.cn/generate_204",
     proxies: () => ["直连", "自选节点", ...proxyGroupRegionNames],
   },
   {
