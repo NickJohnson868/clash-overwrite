@@ -133,7 +133,7 @@ const ruleProviderDefaults = {
 const proxyGroupDefaults = {
   interval: 300,
   timeout: 3000,
-  url: "http://cp.cloudflare.com/generate_204",
+  url: "http://www.gstatic.com/generate_204",
   lazy: true,
   "max-failed-times": 3,
   hidden: false,
@@ -198,7 +198,7 @@ const SERVICE_DEFINITIONS = [
     rules: ["DOMAIN-SUFFIX,chatgpt.com,国外AI", "RULE-SET,ai,国外AI"],
     name: "国外AI",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/ChatGPT.png",
-    url: "https://chat.openai.com/cdn-cgi/trace",
+    url: "http://www.gstatic.com/generate_204",
     ruleProvider: {
       key: "ai",
       config: {
