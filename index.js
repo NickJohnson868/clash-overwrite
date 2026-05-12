@@ -23,6 +23,7 @@ const customDomainRules = [
   "DOMAIN-SUFFIX,publicvm.com,直连",
   "DOMAIN-SUFFIX,worldquantbrain.com,直连",
   "DOMAIN-SUFFIX,biglongxia.com,直连",
+  "DOMAIN-SUFFIX,song868.ccwu.cc,直连",
   "IP-CIDR,8.148.247.44/32,直连,no-resolve"
 ];
 
