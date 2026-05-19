@@ -36,6 +36,7 @@ const ruleOptions = {
   microsoft: true,  // 微软服务
   openai: true,     // 国外AI和GPT
   ads: true,        // 常见的网络广告
+  youtube: true,    // YouTube 视频
   google: true,     // Google服务
 };
 
@@ -215,6 +216,21 @@ const SERVICE_DEFINITIONS = [
   },
 
   // ── 平台服务 ───────────────────────────────────────────
+  {
+    key: "youtube",
+    rules: [
+      "GEOSITE,youtube,YouTube",
+      "DOMAIN-SUFFIX,youtube.com,YouTube",
+      "DOMAIN-SUFFIX,youtu.be,YouTube",
+      "DOMAIN-SUFFIX,googlevideo.com,YouTube",
+      "DOMAIN-SUFFIX,ytimg.com,YouTube",
+      "DOMAIN,youtubei.googleapis.com,YouTube",
+      "DOMAIN,youtube.googleapis.com,YouTube",
+    ],
+    name: "YouTube",
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/YouTube.png",
+    url: "https://www.youtube.com/generate_204",
+  },
   {
     key: "google",
     rules: "GEOSITE,google,谷歌服务",
