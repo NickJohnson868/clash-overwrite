@@ -32,95 +32,11 @@ const customDomainRules = [
 const ruleOptions = {
   domestic: true,   // 国内策略组
   foreign: true,    // 国外策略组
-  region: false,    // 地区策略组（关闭则全部添加到默认节点）
   microsoft: true,  // 微软服务
   openai: true,     // 国外AI和GPT
   ads: true,        // 常见的网络广告
   youtube: true,    // YouTube 视频
   google: true,     // Google服务
-};
-
-/**
- * 地区配置
- * regex: 匹配代理节点名称（有一定误判概率，可自行调整）
- * excludeHighPercentage: 排除高倍率节点（仅对地区分组有效）
- * ratioLimit: 倍率阈值，超过此值的节点会被排除
- */
-const regionOptions = {
-  excludeHighPercentage: false,
-  useCommonRegion: false,
-  regions: [
-    {
-      name: "HK香港",
-      regex: /港|香港|🇭🇰|hk|hongkong|xiang|xiang gang|hong kong/i,
-      ratioLimit: 2,
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Hong_Kong.png",
-      common: true,
-    },
-    {
-      name: "US美国",
-      regex: /美|美国|🇺🇸|us|usa|USA|united state|america/i,
-      ratioLimit: 2,
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_States.png",
-      common: false,
-    },
-    {
-      name: "JP日本",
-      regex: /日本|🇯🇵|jp|japanese|japan/i,
-      ratioLimit: 2,
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Japan.png",
-      common: false,
-    },
-    {
-      name: "KR韩国",
-      regex: /韩|韩国|🇰🇷|kr|korea/i,
-      ratioLimit: 2,
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Korea.png",
-      common: false,
-    },
-    {
-      name: "SG新加坡",
-      regex: /新加坡|🇸🇬|sg|singapore/i,
-      ratioLimit: 2,
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Singapore.png",
-      common: true,
-    },
-    {
-      name: "TW台湾",
-      regex: /台湾|🇹🇼|tw|taiwan|tai wan/i,
-      ratioLimit: 2,
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Taiwan.png",
-      common: true,
-    },
-    {
-      name: "GB英国",
-      regex: /英|英国|🇬🇧|GB|uk|united kingdom|great britain/i,
-      ratioLimit: 2,
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/United_Kingdom.png",
-      common: false,
-    },
-    {
-      name: "DE德国",
-      regex: /德|德国|🇩🇪|de|germany/i,
-      ratioLimit: 2,
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Germany.png",
-      common: false,
-    },
-    {
-      name: "MY马来西亚",
-      regex: /马来|马来西亚|🇲🇾|my|malaysia/i,
-      ratioLimit: 2,
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Malaysia.png",
-      common: false,
-    },
-    {
-      name: "TK土耳其",
-      regex: /土耳其|🇹🇷|tk|turkey/i,
-      ratioLimit: 2,
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Turkey.png",
-      common: false,
-    },
-  ],
 };
 
 // ═══════════════════════════════════════════════════════════
@@ -144,46 +60,16 @@ const proxyGroupDefaults = {
   hidden: false,
 };
 
-/** 用于从节点名称中提取倍率值 */
-const RATIO_REGEX = /(?<=[xX✕✖⨉倍率])([1-9]+(\.\d+)*|0{1}\.\d+)(?=[xX✕✖⨉倍率])*/i;
-
 // ═══════════════════════════════════════════════════════════
 // 3. 内部状态
 // ═══════════════════════════════════════════════════════════
 
 const ruleProviders = new Map();
 const rules = [];
-const regionProxyGroups = [];
-let proxyNamesOther = [];
-let proxyGroupRegionNames = [];
+let proxyNames = [];
 
 // ═══════════════════════════════════════════════════════════
-// 4. 辅助函数
-// ═══════════════════════════════════════════════════════════
-
-/** 从代理节点名称中提取倍率数值 */
-function getProxyRatio(name) {
-  const match = RATIO_REGEX.exec(name);
-  return parseFloat(match?.[1] || "0");
-}
-
-/**
- * 按地区条件筛选代理节点
- * 返回符合 regex、common 和 ratioLimit 要求的节点名称列表
- */
-function filterRegionProxies(proxies, region) {
-  return proxies
-    .filter((p) => {
-      if (!p.name.match(region.regex)) return false;
-      if (regionOptions.useCommonRegion && !region.common) return false;
-      if (regionOptions.excludeHighPercentage && getProxyRatio(p.name) > region.ratioLimit) return false;
-      return true;
-    })
-    .map((p) => p.name);
-}
-
-// ═══════════════════════════════════════════════════════════
-// 5. 服务定义表（按规则优先级排列）
+// 4. 服务定义表（按规则优先级排列）
 // ═══════════════════════════════════════════════════════════
 
 /**
@@ -253,7 +139,7 @@ const SERVICE_DEFINITIONS = [
     name: "国内网站",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/StreamingCN.png",
     url: "https://wifi.vivo.com.cn/generate_204",
-    proxies: () => ["直连", "自选节点", ...proxyGroupRegionNames],
+    proxies: () => ["直连", "自选节点", ...proxyNames],
   },
   {
     key: "foreign",
@@ -271,14 +157,14 @@ const SERVICE_DEFINITIONS = [
 ];
 
 // ═══════════════════════════════════════════════════════════
-// 6. 核心函数
+// 5. 核心函数
 // ═══════════════════════════════════════════════════════════
 
 /** 初始化基础配置和内置规则集 */
 function initBaseConfig(config) {
   rules.push("GEOSITE,private,DIRECT", "GEOIP,private,DIRECT,no-resolve");
 
-  proxyNamesOther = config.proxies.map((p) => p.name);
+  proxyNames = config.proxies.map((p) => p.name);
 
   Object.assign(config, {
     "allow-lan": true,
@@ -323,7 +209,7 @@ function registerServices(config) {
     // proxies 可以是数组（静态列表）或函数（需要延迟求值的动态列表）
     const proxies = typeof svc.proxies === "function"
       ? svc.proxies()
-      : (svc.proxies || ["自选节点", "直连", ...proxyGroupRegionNames]);
+      : (svc.proxies || ["自选节点", "直连", ...proxyNames]);
     config["proxy-groups"].push({
       ...proxyGroupDefaults,
       name: svc.name,
@@ -349,49 +235,18 @@ const main = (config, profileName) => {
   // 1. 初始化基础配置
   initBaseConfig(config);
 
-  // 2. 构建地区代理组
-  if (ruleOptions.region) {
-    regionOptions.regions.forEach((region) => {
-      console.info(region);
-      const matchedProxies = filterRegionProxies(config.proxies, region);
-
-      if (matchedProxies.length > 0) {
-        regionProxyGroups.push({
-          ...proxyGroupDefaults,
-          name: region.name,
-          type: "url-test",
-          tolerance: 50,
-          icon: region.icon,
-          proxies: matchedProxies,
-        });
-      }
-
-      proxyNamesOther = proxyNamesOther.filter(
-        (name) => !matchedProxies.includes(name)
-      );
-    });
-
-    proxyGroupRegionNames = regionProxyGroups.map((g) => g.name);
-
-    if (proxyNamesOther.length > 0) {
-      proxyGroupRegionNames.push("其他节点");
-    }
-  } else {
-    proxyGroupRegionNames = proxyNamesOther;
-  }
-
-  // 3. 创建默认代理组
+  // 2. 创建默认代理组
   config["proxy-groups"] = [
     {
       ...proxyGroupDefaults,
       name: "自选节点",
       type: "select",
-      proxies: ["直连", ...proxyGroupRegionNames],
+      proxies: ["直连", ...proxyNames],
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png",
     },
   ];
 
-  // 4. 添加直连节点 + 自定义域名规则
+  // 3. 添加直连节点 + 自定义域名规则
   config.proxies = config?.proxies || [];
   config.proxies.push({
     name: "直连",
@@ -400,25 +255,10 @@ const main = (config, profileName) => {
   });
   rules.push(...customDomainRules);
 
-  // 5. 注册可选服务
+  // 4. 注册可选服务
   registerServices(config);
 
-  // 6. 追加地区代理组 + 其他节点
-  if (ruleOptions.region) {
-    config["proxy-groups"] = config["proxy-groups"].concat(regionProxyGroups);
-
-    if (proxyNamesOther.length > 0) {
-      config["proxy-groups"].push({
-        ...proxyGroupDefaults,
-        name: "其他节点",
-        type: "select",
-        proxies: proxyNamesOther,
-        icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/World_Map.png",
-      });
-    }
-  }
-
-  // 7. 覆盖原配置中的规则
+  // 5. 覆盖原配置中的规则
   config["rules"] = rules;
   config["rule-providers"] = Object.fromEntries(ruleProviders);
 
