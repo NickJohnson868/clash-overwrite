@@ -18,7 +18,7 @@ const customDomainRules = [
   "DOMAIN-SUFFIX,juhefu.com,直连",
   "DOMAIN-SUFFIX,yaolinks.com,直连",
   "DOMAIN-SUFFIX,bigmodel.cn,直连",
-  "DOMAIN-SUFFIX,gemini.google.com,国外AI",
+  "DOMAIN-KEYWORD,gemini,国外AI",
   "DOMAIN-SUFFIX,hutaocards.com,直连",
   "DOMAIN-SUFFIX,publicvm.com,直连",
   "DOMAIN-SUFFIX,worldquantbrain.com,直连",
