@@ -14,19 +14,21 @@ const customDomainRules = [
   "DOMAIN-SUFFIX,gitcode.com,直连",
   "DOMAIN-SUFFIX,ybm100.com,直连",
   "DOMAIN-SUFFIX,xiaosn.com,直连",
-  "DOMAIN-SUFFIX,supercell.com,自选节点",
   "DOMAIN-SUFFIX,juhefu.com,直连",
   "DOMAIN-SUFFIX,yaolinks.com,直连",
   "DOMAIN-SUFFIX,bigmodel.cn,直连",
-  "DOMAIN-KEYWORD,gemini,国外AI",
-  "DOMAIN-KEYWORD,openai,国外AI",
   "DOMAIN-SUFFIX,hutaocards.com,直连",
   "DOMAIN-SUFFIX,publicvm.com,直连",
   "DOMAIN-SUFFIX,worldquantbrain.com,直连",
   "DOMAIN-SUFFIX,biglongxia.com,直连",
   "DOMAIN-SUFFIX,song868.ccwu.cc,直连",
+  "DOMAIN-SUFFIX,92ydl.com,直连",
+  "DOMAIN-SUFFIX,supercell.com,自选节点",
+
+  "DOMAIN-KEYWORD,gemini,国外AI",
+  "DOMAIN-KEYWORD,openai,国外AI",
+
   "IP-CIDR,8.148.247.44/32,直连,no-resolve",
-  "DOMAIN-SUFFIX,92ydl.com,直连"
 ];
 
 /** 功能开关 */
