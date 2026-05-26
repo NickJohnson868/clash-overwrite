@@ -39,6 +39,7 @@ const ruleOptions = {
   foreign: true,    // 国外策略组
   microsoft: true,  // 微软服务
   openai: true,     // 国外AI和GPT
+  baiduAi: true,    // 百度AI
   ads: true,        // 常见的网络广告
   youtube: true,    // YouTube 视频
   google: true,     // Google服务
@@ -104,6 +105,16 @@ const SERVICE_DEFINITIONS = [
         path: "./ruleset/DustinWin/ai.mrs",
       },
     },
+  },
+  {
+    key: "baiduAi",
+    rules: [
+      "DOMAIN,chat.baidu.com,百度AI",
+      "DOMAIN-SUFFIX,chat.baidu.com,百度AI",
+    ],
+    name: "百度AI",
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Baidu.png",
+    url: "https://chat.baidu.com",
   },
 
   // ── 平台服务 ───────────────────────────────────────────
