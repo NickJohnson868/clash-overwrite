@@ -113,7 +113,7 @@ const SERVICE_DEFINITIONS = [
       "DOMAIN-SUFFIX,chat.baidu.com,百度AI",
     ],
     name: "百度AI",
-    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Baidu.png",
+    icon: "https://psstatic.cdn.bcebos.com/aife/static/private-active-img_1772711716000.png",
     url: "https://chat.baidu.com",
   },
 
