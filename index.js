@@ -111,8 +111,8 @@ const SERVICE_DEFINITIONS = [
     rules: [
       "DOMAIN,chat.baidu.com,百度AI",
       "DOMAIN-SUFFIX,chat.baidu.com,百度AI",
-      "DOMAIN,315jiage.cn,兔灵",
-      "DOMAIN-SUFFIX,315jiage.cn,兔灵",
+      "DOMAIN,315jiage.cn,百度AI",
+      "DOMAIN-SUFFIX,315jiage.cn,百度AI"
     ],
     name: "百度AI",
     icon: "https://psstatic.cdn.bcebos.com/aife/static/private-active-img_1772711716000.png",
