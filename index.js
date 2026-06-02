@@ -39,7 +39,7 @@ const ruleOptions = {
   foreign: true,    // 国外策略组
   microsoft: true,  // 微软服务
   openai: true,     // 国外AI和GPT
-  baiduAi: true,    // 百度AI
+  baiduAi: false,    // 百度AI
   ads: true,        // 常见的网络广告
   youtube: true,    // YouTube 视频
   google: true,     // Google服务
