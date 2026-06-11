@@ -39,11 +39,26 @@ const ruleOptions = {
   foreign: true,    // 国外策略组
   microsoft: true,  // 微软服务
   openai: true,     // 国外AI和GPT
-  baiduAi: false,    // 百度AI
+  baiduAi: false,   // 百度AI
   ads: true,        // 常见的网络广告
   youtube: true,    // YouTube 视频
   google: true,     // Google服务
 };
+
+/** BootsNet 本地代理配置 */
+const BOOTSNET = {
+  name: "BootsNet",
+  type: "socks5", // 如果 7999 是 HTTP 代理，改成 "http"
+  server: "127.0.0.1",
+  port: 7999,
+  udp: true,
+};
+
+/** BootsNet 进程名，防止代理循环 */
+const BOOTSNET_PROCESS_RULES = [
+  "PROCESS-NAME,BootsNet.exe,DIRECT",
+  "PROCESS-NAME,bootsnet.exe,DIRECT",
+];
 
 // ═══════════════════════════════════════════════════════════
 // 2. 通用默认配置
@@ -73,6 +88,20 @@ const proxyGroupDefaults = {
 const ruleProviders = new Map();
 const rules = [];
 let proxyNames = [];
+
+const uniq = (arr) => [...new Set(arr.filter(Boolean))];
+
+const getRawProxyNames = () =>
+  proxyNames.filter((name) => name !== BOOTSNET.name && name !== "直连");
+
+const getSelfSelectProxies = () =>
+  uniq(["直连", BOOTSNET.name, ...getRawProxyNames()]);
+
+const getDefaultProxies = () =>
+  uniq([BOOTSNET.name, "自选节点", "直连", ...getRawProxyNames()]);
+
+const getDomesticProxies = () =>
+  uniq(["直连", BOOTSNET.name, "自选节点", ...getRawProxyNames()]);
 
 // ═══════════════════════════════════════════════════════════
 // 4. 服务定义表（按规则优先级排列）
@@ -112,7 +141,7 @@ const SERVICE_DEFINITIONS = [
       "DOMAIN,chat.baidu.com,百度AI",
       "DOMAIN-SUFFIX,chat.baidu.com,百度AI",
       "DOMAIN,315jiage.cn,百度AI",
-      "DOMAIN-SUFFIX,315jiage.cn,百度AI"
+      "DOMAIN-SUFFIX,315jiage.cn,百度AI",
     ],
     name: "百度AI",
     icon: "https://psstatic.cdn.bcebos.com/aife/static/private-active-img_1772711716000.png",
@@ -157,7 +186,7 @@ const SERVICE_DEFINITIONS = [
     name: "国内网站",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/StreamingCN.png",
     url: "https://wifi.vivo.com.cn/generate_204",
-    proxies: () => ["直连", "自选节点", ...proxyNames],
+    proxies: getDomesticProxies,
   },
   {
     key: "foreign",
@@ -170,7 +199,7 @@ const SERVICE_DEFINITIONS = [
     rules: "GEOSITE,category-ads-all,广告过滤",
     name: "广告过滤",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Advertising.png",
-    proxies: ["REJECT", "直连", "自选节点"],
+    proxies: ["REJECT", "直连", "自选节点", BOOTSNET.name],
   },
 ];
 
@@ -180,9 +209,15 @@ const SERVICE_DEFINITIONS = [
 
 /** 初始化基础配置和内置规则集 */
 function initBaseConfig(config) {
-  rules.push("GEOSITE,private,DIRECT", "GEOIP,private,DIRECT,no-resolve");
+  rules.push(
+    ...BOOTSNET_PROCESS_RULES,
 
-  proxyNames = config.proxies.map((p) => p.name);
+    // 局域网 / 私有地址直连
+    "GEOSITE,private,DIRECT",
+    "GEOIP,private,DIRECT,no-resolve"
+  );
+
+  proxyNames = (config.proxies || []).map((p) => p.name).filter(Boolean);
 
   Object.assign(config, {
     "allow-lan": true,
@@ -194,10 +229,10 @@ function initBaseConfig(config) {
     },
     "unified-delay": true,
     "tcp-concurrent": true,
-    "keep-alive-interval": 1800,  // 大一点省电，笔记本和手机需要关注
+    "keep-alive-interval": 1800,
     "find-process-mode": "strict",
     "geodata-mode": true,
-    "geodata-loader": "standard",  // 小内存环境可用；旁路由建议 standard[memconservative]
+    "geodata-loader": "standard",
     "geo-auto-update": true,
     "geo-update-interval": 24,
   });
@@ -215,7 +250,7 @@ function registerServices(config) {
       rules.push(svc.rules);
     }
 
-    // 注册规则集（如果有）
+    // 注册规则集
     if (svc.ruleProvider) {
       ruleProviders.set(svc.ruleProvider.key, {
         ...ruleProviderDefaults,
@@ -224,10 +259,11 @@ function registerServices(config) {
     }
 
     // 添加代理组
-    // proxies 可以是数组（静态列表）或函数（需要延迟求值的动态列表）
-    const proxies = typeof svc.proxies === "function"
-      ? svc.proxies()
-      : (svc.proxies || ["自选节点", "直连", ...proxyNames]);
+    const proxies =
+      typeof svc.proxies === "function"
+        ? svc.proxies()
+        : svc.proxies || getDefaultProxies();
+
     config["proxy-groups"].push({
       ...proxyGroupDefaults,
       name: svc.name,
@@ -246,37 +282,51 @@ const main = (config, profileName) => {
     typeof config?.["proxy-providers"] === "object"
       ? Object.keys(config["proxy-providers"]).length
       : 0;
+
   if (proxyCount === 0 && proxyProviderCount === 0) {
     throw new Error("配置文件中未找到任何代理");
   }
 
+  config.proxies = config.proxies || [];
+
   // 1. 初始化基础配置
   initBaseConfig(config);
 
-  // 2. 创建默认代理组
+  // 2. 添加直连节点
+  if (!config.proxies.some((p) => p.name === "直连")) {
+    config.proxies.push({
+      name: "直连",
+      type: "direct",
+      udp: true,
+    });
+  }
+
+  // 3. 添加 BootsNet 本地代理节点
+  if (!config.proxies.some((p) => p.name === BOOTSNET.name)) {
+    config.proxies.push(BOOTSNET);
+  }
+
+  // 4. 刷新代理名称，确保 BootsNet 出现在策略组里
+  proxyNames = uniq([...proxyNames, BOOTSNET.name]);
+
+  // 5. 创建默认代理组
   config["proxy-groups"] = [
     {
       ...proxyGroupDefaults,
       name: "自选节点",
       type: "select",
-      proxies: ["直连", ...proxyNames],
+      proxies: getSelfSelectProxies(),
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png",
     },
   ];
 
-  // 3. 添加直连节点 + 自定义域名规则
-  config.proxies = config?.proxies || [];
-  config.proxies.push({
-    name: "直连",
-    type: "direct",
-    udp: true,
-  });
+  // 6. 添加自定义域名规则
   rules.push(...customDomainRules);
 
-  // 4. 注册可选服务
+  // 7. 注册可选服务
   registerServices(config);
 
-  // 5. 覆盖原配置中的规则
+  // 8. 覆盖原配置中的规则
   config["rules"] = rules;
   config["rule-providers"] = Object.fromEntries(ruleProviders);
 
