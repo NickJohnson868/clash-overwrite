@@ -97,13 +97,13 @@ const getRawProxyNames = () =>
   proxyNames.filter((name) => name !== BOOTSNET.name && name !== "直连");
 
 const getSelfSelectProxies = () =>
-  uniq(["直连", BOOTSNET.name, ...getRawProxyNames()]);
+  uniq(["自选节点", "直连", BOOTSNET.name, ...getRawProxyNames()]);
 
 const getDefaultProxies = () =>
-  uniq([BOOTSNET.name, "自选节点", "直连", ...getRawProxyNames()]);
+  uniq(["自选节点", "直连", BOOTSNET.name, ...getRawProxyNames()]);
 
 const getDomesticProxies = () =>
-  uniq(["直连", BOOTSNET.name, "自选节点", ...getRawProxyNames()]);
+  uniq(["直连", "自选节点", BOOTSNET.name, ...getRawProxyNames()]);
 
 // ═══════════════════════════════════════════════════════════
 // 4. 服务定义表（按规则优先级排列）
