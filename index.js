@@ -24,6 +24,8 @@ const customDomainRules = [
   "DOMAIN-SUFFIX,song868.ccwu.cc,直连",
   "DOMAIN-SUFFIX,92ydl.com,直连",
   "DOMAIN-SUFFIX,ipzan.com,直连",
+  "DOMAIN-SUFFIX,nip.cmliusss,直连",
+  
   "DOMAIN-SUFFIX,supercell.com,自选节点",
   "DOMAIN-SUFFIX,grok.com,国外AI",
 
