@@ -101,7 +101,7 @@ const getSelfSelectProxies = () =>
 
 // ✅ 改动点：自选节点排首位，BootsNet 移到直连之后
 const getDefaultProxies = () =>
-  uniq(["直连", BOOTSNET.name, ...getRawProxyNames()]);
+  uniq(["自选节点", "直连", BOOTSNET.name, ...getRawProxyNames()]);
 
 const getDomesticProxies = () =>
   uniq(["直连", BOOTSNET.name, "自选节点", ...getRawProxyNames()]);
