@@ -25,7 +25,7 @@ const customDomainRules = [
   "DOMAIN-SUFFIX,92ydl.com,直连",
   "DOMAIN-SUFFIX,ipzan.com,直连",
   "DOMAIN-SUFFIX,nip.cmliusss,直连",
-  
+
   "DOMAIN-SUFFIX,supercell.com,自选节点",
   "DOMAIN-SUFFIX,grok.com,国外AI",
 
@@ -97,13 +97,14 @@ const getRawProxyNames = () =>
   proxyNames.filter((name) => name !== BOOTSNET.name && name !== "直连");
 
 const getSelfSelectProxies = () =>
-  uniq(["自选节点", "直连", BOOTSNET.name, ...getRawProxyNames()]);
+  uniq(["直连", BOOTSNET.name, ...getRawProxyNames()]);
 
+// ✅ 改动点：自选节点排首位，BootsNet 移到直连之后
 const getDefaultProxies = () =>
   uniq(["自选节点", "直连", BOOTSNET.name, ...getRawProxyNames()]);
 
 const getDomesticProxies = () =>
-  uniq(["直连", "自选节点", BOOTSNET.name, ...getRawProxyNames()]);
+  uniq(["直连", BOOTSNET.name, "自选节点", ...getRawProxyNames()]);
 
 // ═══════════════════════════════════════════════════════════
 // 4. 服务定义表（按规则优先级排列）
