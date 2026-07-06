@@ -45,7 +45,7 @@ const BOOTSNET = {
   name: "BootsNet",
   type: "socks5",
   server: "127.0.0.1",
-  port: 7999,
+  port: 7892,
   udp: true,
 };
 
