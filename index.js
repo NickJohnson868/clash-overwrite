@@ -29,6 +29,7 @@ const customDomainRules = [
   "DOMAIN-KEYWORD,openai,国外AI",
 
   "IP-CIDR,8.148.247.44/32,直连,no-resolve",
+  "IP-CIDR,8.211.168.130/32,直连,no-resolve"
 ];
 
 const ruleOptions = {
