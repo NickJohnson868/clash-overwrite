@@ -169,6 +169,8 @@ function initBaseConfig(config) {
   Object.assign(config, {
     "allow-lan": true,
     "bind-address": "*",
+    // 覆写订阅自带的 HTTP 监听端口:把 7892 让给 BoostNet,clash 自己的 HTTP 监听改走 7897
+    port: 7897,
     mode: "rule",
     profile: {
       "store-selected": true,
