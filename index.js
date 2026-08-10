@@ -42,6 +42,7 @@ const ruleOptions = {
   ads: true,
   youtube: true,
   google: true,
+  twitter: true,
 };
 
 const BOOTSNET = {
@@ -128,6 +129,19 @@ const SERVICE_DEFINITIONS = [
     name: "谷歌服务",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Google_Search.png",
     url: "https://www.google.com/generate_204",
+  },
+  {
+    key: "twitter",
+    rules: [
+      "GEOSITE,twitter,Twitter",
+      "DOMAIN-SUFFIX,twitter.com,Twitter",
+      "DOMAIN-SUFFIX,x.com,Twitter",
+      "DOMAIN-SUFFIX,twimg.com,Twitter",
+      "DOMAIN-SUFFIX,t.co,Twitter",
+    ],
+    name: "Twitter",
+    icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Twitter.png",
+    url: "https://x.com",
   },
   {
     key: "microsoft",
