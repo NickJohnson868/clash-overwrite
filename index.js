@@ -25,6 +25,7 @@ const customDomainRules = [
   "DOMAIN-SUFFIX,cc-code.cc,直连",
 
   "DOMAIN-SUFFIX,supercell.com,自选节点",
+  "DOMAIN-SUFFIX,ban.hyhawang.com,自选节点",
   "DOMAIN-SUFFIX,grok.com,国外AI",
 
   "DOMAIN-KEYWORD,gemini,国外AI",
