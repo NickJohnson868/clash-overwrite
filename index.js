@@ -23,6 +23,7 @@ const customDomainRules = [
   "DOMAIN-SUFFIX,chat.ant-ling.com,直连",
   "DOMAIN-SUFFIX,ruoli.dev,直连",
   "DOMAIN-SUFFIX,cc-code.cc,直连",
+  "DOMAIN-SUFFIX,api.ej2075.com,直连",
 
   "DOMAIN-SUFFIX,supercell.com,自选节点",
   "DOMAIN-SUFFIX,ban.hyhawang.com,自选节点",
