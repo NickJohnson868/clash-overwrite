@@ -55,6 +55,25 @@ const BOOTSNET = {
   udp: true,
 };
 
+// 固定 VLESS Reality 节点：放在覆盖逻辑中，订阅更新后仍会保留
+const LISA_DE_DIRECT = {
+  name: "Lisa-DE-Direct",
+  type: "vless",
+  server: "82.139.234.59",
+  port: 443,
+  uuid: "b711504f-5e00-43cb-a10f-3dfbe7e1be72",
+  network: "tcp",
+  udp: true,
+  tls: true,
+  servername: "www.cloudflare.com",
+  flow: "xtls-rprx-vision",
+  "reality-opts": {
+    "public-key": "Q25Jnxp7PGqgPV9SgeQcU0iYF6COMHIsUgHx1bQfyTg",
+    "short-id": "2ab48fcf299a008e",
+  },
+  "client-fingerprint": "chrome",
+};
+
 const BOOTSNET_PROCESS_RULES = [
   "PROCESS-NAME,BootsNet.exe,DIRECT",
   "PROCESS-NAME,bootsnet.exe,DIRECT",
@@ -250,6 +269,10 @@ const main = (config, profileName) => {
   }
 
   config.proxies = config.proxies || [];
+
+  if (!config.proxies.some((p) => p.name === LISA_DE_DIRECT.name)) {
+    config.proxies.push(LISA_DE_DIRECT);
+  }
 
   initBaseConfig(config);
 
