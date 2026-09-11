@@ -107,7 +107,7 @@ const getSelfSelectProxies = () =>
   uniq(["直连", BOOTSNET.name, ...getRawProxyNames()]);
 
 const getDefaultProxies = () =>
-  uniq(["Lisa"]);
+  uniq(["Lisa", "自选节点", "直连", BOOTSNET.name, ...getRawProxyNames()]);
 
 const getDomesticProxies = () =>
   uniq(["直连", BOOTSNET.name, "自选节点", ...getRawProxyNames()]);
@@ -316,6 +316,8 @@ const main = (config, profileName) => {
 
   return config;
 };
+
+
 
 
 
