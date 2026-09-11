@@ -55,6 +55,25 @@ const BOOTSNET = {
   udp: true,
 };
 
+// 固定节点：VLESS + Reality（Lisa-DE-02）
+const LISA_DE_02 = {
+  name: "Lisa-DE-02",
+  type: "vless",
+  server: "82.139.234.157",
+  port: 443,
+  uuid: "c17caf67-c72f-4ad8-b921-2b565a2d534c",
+  udp: true,
+  tls: true,
+  servername: "www.cloudflare.com",
+  flow: "xtls-rprx-vision",
+  network: "tcp",
+  "reality-opts": {
+    "public-key": "wu35CS3HMGYvpBTQvnrcOskq3yjg-8tsQvOoGMY-ghc",
+    "short-id": "ca51bf1a47a340bd",
+  },
+  "client-fingerprint": "chrome",
+};
+
 const BOOTSNET_PROCESS_RULES = [
   "PROCESS-NAME,BootsNet.exe,DIRECT",
   "PROCESS-NAME,bootsnet.exe,DIRECT",
@@ -253,6 +272,10 @@ const main = (config, profileName) => {
 
   initBaseConfig(config);
 
+  if (!config.proxies.some((p) => p.name === LISA_DE_02.name)) {
+    config.proxies.push(LISA_DE_02);
+  }
+
   if (!config.proxies.some((p) => p.name === "直连")) {
     config.proxies.push({
       name: "直连",
@@ -265,7 +288,7 @@ const main = (config, profileName) => {
     config.proxies.push(BOOTSNET);
   }
 
-  proxyNames = uniq([...proxyNames, BOOTSNET.name]);
+  proxyNames = uniq([...proxyNames, LISA_DE_02.name, BOOTSNET.name]);
 
   config["proxy-groups"] = [
     {
