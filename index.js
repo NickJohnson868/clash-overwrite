@@ -107,7 +107,7 @@ const getSelfSelectProxies = () =>
   uniq(["直连", BOOTSNET.name, ...getRawProxyNames()]);
 
 const getDefaultProxies = () =>
-  uniq(["自选节点", "直连", BOOTSNET.name, ...getRawProxyNames()]);
+  uniq(["Lisa"]);
 
 const getDomesticProxies = () =>
   uniq(["直连", BOOTSNET.name, "自选节点", ...getRawProxyNames()]);
@@ -298,6 +298,13 @@ const main = (config, profileName) => {
       proxies: getSelfSelectProxies(),
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png",
     },
+    {
+      ...proxyGroupDefaults,
+      name: "Lisa",
+      type: "select",
+      proxies: [LISA_DE_02.name],
+      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AI.png",
+    },
   ];
 
   rules.push(...customDomainRules);
@@ -309,3 +316,6 @@ const main = (config, profileName) => {
 
   return config;
 };
+
+
+
