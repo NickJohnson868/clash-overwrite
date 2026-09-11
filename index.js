@@ -55,25 +55,6 @@ const BOOTSNET = {
   udp: true,
 };
 
-// 固定 VLESS Reality 节点：放在覆盖逻辑中，订阅更新后仍会保留
-const LISA_DE_DIRECT = {
-  name: "Lisa-DE-Direct",
-  type: "vless",
-  server: "82.139.234.59",
-  port: 443,
-  uuid: "b711504f-5e00-43cb-a10f-3dfbe7e1be72",
-  network: "tcp",
-  udp: true,
-  tls: true,
-  servername: "www.cloudflare.com",
-  flow: "xtls-rprx-vision",
-  "reality-opts": {
-    "public-key": "Q25Jnxp7PGqgPV9SgeQcU0iYF6COMHIsUgHx1bQfyTg",
-    "short-id": "2ab48fcf299a008e",
-  },
-  "client-fingerprint": "chrome",
-};
-
 const BOOTSNET_PROCESS_RULES = [
   "PROCESS-NAME,BootsNet.exe,DIRECT",
   "PROCESS-NAME,bootsnet.exe,DIRECT",
@@ -109,15 +90,12 @@ const getSelfSelectProxies = () =>
 const getDefaultProxies = () =>
   uniq(["自选节点", "直连", BOOTSNET.name, ...getRawProxyNames()]);
 
-const getLisaProxies = () => uniq(["Lisa"]);
-
 const getDomesticProxies = () =>
   uniq(["直连", BOOTSNET.name, "自选节点", ...getRawProxyNames()]);
 
 const SERVICE_DEFINITIONS = [
   {
     key: "openai",
-    useLisa: true,
     rules: ["DOMAIN-SUFFIX,chatgpt.com,国外AI", "RULE-SET,ai,国外AI"],
     name: "国外AI",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/ChatGPT.png",
@@ -134,7 +112,6 @@ const SERVICE_DEFINITIONS = [
   },
   {
     key: "youtube",
-    useLisa: true,
     rules: [
       "GEOSITE,youtube,YouTube",
       "DOMAIN-SUFFIX,youtube.com,YouTube",
@@ -150,7 +127,6 @@ const SERVICE_DEFINITIONS = [
   },
   {
     key: "google",
-    useLisa: true,
     rules: "GEOSITE,google,谷歌服务",
     name: "谷歌服务",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Google_Search.png",
@@ -158,7 +134,6 @@ const SERVICE_DEFINITIONS = [
   },
   {
     key: "twitter",
-    useLisa: true,
     rules: [
       "GEOSITE,twitter,Twitter",
       "DOMAIN-SUFFIX,twitter.com,Twitter",
@@ -172,7 +147,6 @@ const SERVICE_DEFINITIONS = [
   },
   {
     key: "microsoft",
-    useLisa: true,
     rules: ["GEOSITE,microsoft@cn,国内网站", "GEOSITE,microsoft,微软服务"],
     name: "微软服务",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Microsoft.png",
@@ -251,7 +225,7 @@ function registerServices(config) {
     const proxies =
       typeof svc.proxies === "function"
         ? svc.proxies()
-        : svc.proxies || (svc.useLisa ? getLisaProxies() : getDefaultProxies());
+        : svc.proxies || getDefaultProxies();
 
     config["proxy-groups"].push({
       ...proxyGroupDefaults,
@@ -277,10 +251,6 @@ const main = (config, profileName) => {
 
   config.proxies = config.proxies || [];
 
-  if (!config.proxies.some((p) => p.name === LISA_DE_DIRECT.name)) {
-    config.proxies.push(LISA_DE_DIRECT);
-  }
-
   initBaseConfig(config);
 
   if (!config.proxies.some((p) => p.name === "直连")) {
@@ -303,13 +273,6 @@ const main = (config, profileName) => {
       name: "自选节点",
       type: "select",
       proxies: getSelfSelectProxies(),
-      icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png",
-    },
-    {
-      ...proxyGroupDefaults,
-      name: "Lisa",
-      type: "select",
-      proxies: ["Lisa-DE-Direct"],
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png",
     },
   ];
