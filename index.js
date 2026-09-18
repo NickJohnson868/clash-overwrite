@@ -87,6 +87,50 @@ const LISA_US_01 = {
   udp: true,
 };
 
+// 固定节点：VLESS + Reality（Lisa-US-02-Reality）
+const LISA_US_02 = {
+  name: "Lisa-US-02-Reality",
+  type: "vless",
+  server: "192.204.60.246",
+  port: 8443,
+  uuid: "3e9aedce-fefd-40b4-ae7c-2558fdbaff86",
+  udp: true,
+  tls: true,
+  servername: "www.cloudflare.com",
+  flow: "xtls-rprx-vision",
+  network: "tcp",
+  "reality-opts": {
+    "public-key": "VK1-i3iAoZ6ra40jrw46flXyoVlg-oG1brTfOjdIIHY",
+    "short-id": "b426d3226bc3a76d",
+  },
+  "client-fingerprint": "chrome",
+};
+
+// 固定节点：Hysteria2 + obfs-salamander（Lisa-US-03-Hysteria2）
+const LISA_US_03 = {
+  name: "Lisa-US-03-Hysteria2",
+  type: "hysteria2",
+  server: "192.204.60.246",
+  port: 8444,
+  password: "YlYFXFWBLQBsm6kfDcOZcV",
+  obfs: "salamander",
+  "obfs-password": "05701e75d41a6ee2fceeb4c78462",
+  sni: "www.cloudflare.com",
+  "skip-cert-verify": true,
+  udp: true,
+};
+
+// 固定节点：Shadowsocks-2022（Lisa-US-04-SS2022）
+const LISA_US_04 = {
+  name: "Lisa-US-04-SS2022",
+  type: "ss",
+  server: "192.204.60.246",
+  port: 8445,
+  cipher: "2022-blake3-aes-256-gcm",
+  password: "3JGXFDHUAxqpvijRPmeZvjYguMk74rH27DB+vQa4r9w=",
+  udp: true,
+};
+
 const BOOTSNET_PROCESS_RULES = [
   "PROCESS-NAME,BootsNet.exe,DIRECT",
   "PROCESS-NAME,bootsnet.exe,DIRECT",
@@ -348,6 +392,42 @@ const main = (config, profileName) => {
     );
   }
 
+  // 加入 Lisa 美国 VLESS + Reality 节点
+  if (
+    !config.proxies.some(
+      (p) =>
+        p.name === LISA_US_02.name
+    )
+  ) {
+    config.proxies.push(
+      LISA_US_02
+    );
+  }
+
+  // 加入 Lisa 美国 Hysteria2 节点
+  if (
+    !config.proxies.some(
+      (p) =>
+        p.name === LISA_US_03.name
+    )
+  ) {
+    config.proxies.push(
+      LISA_US_03
+    );
+  }
+
+  // 加入 Lisa 美国 Shadowsocks-2022 节点
+  if (
+    !config.proxies.some(
+      (p) =>
+        p.name === LISA_US_04.name
+    )
+  ) {
+    config.proxies.push(
+      LISA_US_04
+    );
+  }
+
   // 加入直连节点
   if (
     !config.proxies.some(
@@ -377,6 +457,9 @@ const main = (config, profileName) => {
     ...proxyNames,
     LISA_DE_02.name,
     LISA_US_01.name,
+    LISA_US_02.name,
+    LISA_US_03.name,
+    LISA_US_04.name,
     BOOTSNET.name,
   ]);
 
@@ -398,6 +481,9 @@ const main = (config, profileName) => {
       proxies: [
         LISA_DE_02.name,
         LISA_US_01.name,
+        LISA_US_02.name,
+        LISA_US_03.name,
+        LISA_US_04.name,
       ],
 
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AI.png",
