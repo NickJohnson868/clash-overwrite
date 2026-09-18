@@ -74,6 +74,19 @@ const LISA_DE_02 = {
   "client-fingerprint": "chrome",
 };
 
+// 固定节点：AnyTLS（Lisa-US-01）
+const LISA_US_01 = {
+  name: "Lisa-US-01",
+  type: "anytls",
+  server: "192.204.60.246",
+  port: 443,
+  password: "17usYQiDzgMQaocgbB7xlSme",
+  sni: "www.cloudflare.com",
+  "client-fingerprint": "chrome",
+  "skip-cert-verify": true,
+  udp: true,
+};
+
 const BOOTSNET_PROCESS_RULES = [
   "PROCESS-NAME,BootsNet.exe,DIRECT",
   "PROCESS-NAME,bootsnet.exe,DIRECT",
@@ -166,14 +179,20 @@ const SERVICE_DEFINITIONS = [
   },
   {
     key: "microsoft",
-    rules: ["GEOSITE,microsoft@cn,国内网站", "GEOSITE,microsoft,微软服务"],
+    rules: [
+      "GEOSITE,microsoft@cn,国内网站",
+      "GEOSITE,microsoft,微软服务"
+    ],
     name: "微软服务",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Microsoft.png",
     url: "http://www.gstatic.com/generate_204",
   },
   {
     key: "domestic",
-    rules: ["GEOIP,CN,国内网站,no-resolve", "GEOSITE,CN,国内网站"],
+    rules: [
+      "GEOIP,CN,国内网站,no-resolve",
+      "GEOSITE,CN,国内网站"
+    ],
     name: "国内网站",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/StreamingCN.png",
     url: "https://wifi.vivo.com.cn/generate_204",
@@ -190,7 +209,12 @@ const SERVICE_DEFINITIONS = [
     rules: "GEOSITE,category-ads-all,广告过滤",
     name: "广告过滤",
     icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Advertising.png",
-    proxies: ["REJECT", "直连", "自选节点", BOOTSNET.name],
+    proxies: [
+      "REJECT",
+      "直连",
+      "自选节点",
+      BOOTSNET.name
+    ],
   },
 ];
 
@@ -201,22 +225,31 @@ function initBaseConfig(config) {
     "GEOIP,private,DIRECT,no-resolve"
   );
 
-  proxyNames = (config.proxies || []).map((p) => p.name).filter(Boolean);
+  proxyNames = (config.proxies || [])
+    .map((p) => p.name)
+    .filter(Boolean);
 
   Object.assign(config, {
     "allow-lan": true,
     "bind-address": "*",
-    // 覆写订阅自带的 HTTP 监听端口:把 7892 让给 BoostNet,clash 自己的 HTTP 监听改走 7897
+
+    // 覆写订阅自带的 HTTP 监听端口:
+    // 把 7892 让给 BoostNet,
+    // clash 自己的 HTTP 监听改走 7897
     port: 7897,
+
     mode: "rule",
+
     profile: {
       "store-selected": true,
       "store-fake-ip": true,
     },
+
     "unified-delay": true,
     "tcp-concurrent": true,
     "keep-alive-interval": 1800,
     "find-process-mode": "strict",
+
     "geodata-mode": true,
     "geodata-loader": "standard",
     "geo-auto-update": true,
@@ -226,7 +259,9 @@ function initBaseConfig(config) {
 
 function registerServices(config) {
   for (const svc of SERVICE_DEFINITIONS) {
-    if (!ruleOptions[svc.key]) continue;
+    if (!ruleOptions[svc.key]) {
+      continue;
+    }
 
     if (Array.isArray(svc.rules)) {
       rules.push(...svc.rules);
@@ -235,10 +270,13 @@ function registerServices(config) {
     }
 
     if (svc.ruleProvider) {
-      ruleProviders.set(svc.ruleProvider.key, {
-        ...ruleProviderDefaults,
-        ...svc.ruleProvider.config,
-      });
+      ruleProviders.set(
+        svc.ruleProvider.key,
+        {
+          ...ruleProviderDefaults,
+          ...svc.ruleProvider.config,
+        }
+      );
     }
 
     const proxies =
@@ -251,32 +289,71 @@ function registerServices(config) {
       name: svc.name,
       type: "select",
       proxies,
-      ...(svc.url && { url: svc.url }),
-      ...(svc.icon && { icon: svc.icon }),
+      ...(svc.url && {
+        url: svc.url
+      }),
+      ...(svc.icon && {
+        icon: svc.icon
+      }),
     });
   }
 }
 
 const main = (config, profileName) => {
-  const proxyCount = config?.proxies?.length ?? 0;
+  const proxyCount =
+    config?.proxies?.length ?? 0;
+
   const proxyProviderCount =
     typeof config?.["proxy-providers"] === "object"
-      ? Object.keys(config["proxy-providers"]).length
+      ? Object.keys(
+          config["proxy-providers"]
+        ).length
       : 0;
 
-  if (proxyCount === 0 && proxyProviderCount === 0) {
-    throw new Error("配置文件中未找到任何代理");
+  if (
+    proxyCount === 0 &&
+    proxyProviderCount === 0
+  ) {
+    throw new Error(
+      "配置文件中未找到任何代理"
+    );
   }
 
-  config.proxies = config.proxies || [];
+  config.proxies =
+    config.proxies || [];
 
   initBaseConfig(config);
 
-  if (!config.proxies.some((p) => p.name === LISA_DE_02.name)) {
-    config.proxies.push(LISA_DE_02);
+  // 加入 Lisa 德国节点
+  if (
+    !config.proxies.some(
+      (p) =>
+        p.name === LISA_DE_02.name
+    )
+  ) {
+    config.proxies.push(
+      LISA_DE_02
+    );
   }
 
-  if (!config.proxies.some((p) => p.name === "直连")) {
+  // 加入 Lisa 美国 AnyTLS 节点
+  if (
+    !config.proxies.some(
+      (p) =>
+        p.name === LISA_US_01.name
+    )
+  ) {
+    config.proxies.push(
+      LISA_US_01
+    );
+  }
+
+  // 加入直连节点
+  if (
+    !config.proxies.some(
+      (p) => p.name === "直连"
+    )
+  ) {
     config.proxies.push({
       name: "直连",
       type: "direct",
@@ -284,40 +361,61 @@ const main = (config, profileName) => {
     });
   }
 
-  if (!config.proxies.some((p) => p.name === BOOTSNET.name)) {
-    config.proxies.push(BOOTSNET);
+  // 加入 BootsNet
+  if (
+    !config.proxies.some(
+      (p) =>
+        p.name === BOOTSNET.name
+    )
+  ) {
+    config.proxies.push(
+      BOOTSNET
+    );
   }
 
-  proxyNames = uniq([...proxyNames, LISA_DE_02.name, BOOTSNET.name]);
+  proxyNames = uniq([
+    ...proxyNames,
+    LISA_DE_02.name,
+    LISA_US_01.name,
+    BOOTSNET.name,
+  ]);
 
   config["proxy-groups"] = [
     {
       ...proxyGroupDefaults,
       name: "自选节点",
       type: "select",
-      proxies: getSelfSelectProxies(),
+      proxies:
+        getSelfSelectProxies(),
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/Proxy.png",
     },
+
     {
       ...proxyGroupDefaults,
       name: "Lisa",
       type: "select",
-      proxies: [LISA_DE_02.name],
+
+      proxies: [
+        LISA_DE_02.name,
+        LISA_US_01.name,
+      ],
+
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AI.png",
     },
   ];
 
-  rules.push(...customDomainRules);
+  rules.push(
+    ...customDomainRules
+  );
 
   registerServices(config);
 
   config.rules = rules;
-  config["rule-providers"] = Object.fromEntries(ruleProviders);
+
+  config["rule-providers"] =
+    Object.fromEntries(
+      ruleProviders
+    );
 
   return config;
 };
-
-
-
-
-
