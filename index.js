@@ -78,7 +78,7 @@ const LISA_DE_02 = {
 
 // 固定节点：AnyTLS（Lisa-US-01）
 const LISA_US_01 = {
-  name: "Lisa-US-01",
+  name: "Lisa-US-01-AnyTLS",
   type: "anytls",
   server: "192.204.60.246",
   port: 443,
@@ -131,6 +131,35 @@ const LISA_US_04 = {
   cipher: "2022-blake3-aes-256-gcm",
   password: "3JGXFDHUAxqpvijRPmeZvjYguMk74rH27DB+vQa4r9w=",
   udp: true,
+};
+
+// 固定节点：Trojan + TLS（Lisa-US-05-Trojan）
+const LISA_US_05 = {
+  name: "Lisa-US-05-Trojan",
+  type: "trojan",
+  server: "192.204.60.246",
+  port: 2053,
+  password: "bzlt6Aj6NNR23Xd0G984Fe1K",
+  sni: "www.cloudflare.com",
+  "skip-cert-verify": true,
+  udp: true,
+  "client-fingerprint": "chrome",
+};
+
+// 固定节点：TUIC v5（Lisa-US-06-TUIC）
+const LISA_US_06 = {
+  name: "Lisa-US-06-TUIC",
+  type: "tuic",
+  server: "192.204.60.246",
+  port: 2053,
+  uuid: "330a68da-3791-4826-a08a-391f9d1ccc84",
+  password: "VfxuLL2Zktg2DOp1hruchSv3",
+  sni: "www.cloudflare.com",
+  "skip-cert-verify": true,
+  alpn: ["h3"],
+  udp: true,
+  "congestion-controller": "bbr",
+  "udp-relay-mode": "native",
 };
 
 const BOOTSNET_PROCESS_RULES = [
@@ -430,6 +459,30 @@ const main = (config, profileName) => {
     );
   }
 
+  // 加入 Lisa 美国 Trojan 节点
+  if (
+    !config.proxies.some(
+      (p) =>
+        p.name === LISA_US_05.name
+    )
+  ) {
+    config.proxies.push(
+      LISA_US_05
+    );
+  }
+
+  // 加入 Lisa 美国 TUIC 节点
+  if (
+    !config.proxies.some(
+      (p) =>
+        p.name === LISA_US_06.name
+    )
+  ) {
+    config.proxies.push(
+      LISA_US_06
+    );
+  }
+
   // 加入直连节点
   if (
     !config.proxies.some(
@@ -462,6 +515,8 @@ const main = (config, profileName) => {
     LISA_US_02.name,
     LISA_US_03.name,
     LISA_US_04.name,
+    LISA_US_05.name,
+    LISA_US_06.name,
     BOOTSNET.name,
   ]);
 
@@ -486,6 +541,8 @@ const main = (config, profileName) => {
         LISA_US_02.name,
         LISA_US_03.name,
         LISA_US_04.name,
+        LISA_US_05.name,
+        LISA_US_06.name,
       ],
 
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AI.png",
