@@ -33,7 +33,9 @@ const customDomainRules = [
   "DOMAIN-KEYWORD,openai,国外AI",
 
   "IP-CIDR,8.148.247.44/32,直连,no-resolve",
-  "IP-CIDR,8.211.168.130/32,直连,no-resolve"
+  "IP-CIDR,8.211.168.130/32,直连,no-resolve",
+  "IP-CIDR,192.204.60.246/32,直连,no-resolve",
+  "IP-CIDR,82.139.234.157/32,直连,no-resolve"
 ];
 
 const ruleOptions = {
@@ -96,7 +98,7 @@ const LISA_US_02 = {
   uuid: "3e9aedce-fefd-40b4-ae7c-2558fdbaff86",
   udp: true,
   tls: true,
-  servername: "www.cloudflare.com",
+  servername: "www.microsoft.com",
   flow: "xtls-rprx-vision",
   network: "tcp",
   "reality-opts": {
@@ -111,7 +113,7 @@ const LISA_US_03 = {
   name: "Lisa-US-03-Hysteria2",
   type: "hysteria2",
   server: "192.204.60.246",
-  port: 8444,
+  port: 443,
   password: "YlYFXFWBLQBsm6kfDcOZcV",
   obfs: "salamander",
   "obfs-password": "05701e75d41a6ee2fceeb4c78462",
@@ -125,7 +127,7 @@ const LISA_US_04 = {
   name: "Lisa-US-04-SS2022",
   type: "ss",
   server: "192.204.60.246",
-  port: 8445,
+  port: 80,
   cipher: "2022-blake3-aes-256-gcm",
   password: "3JGXFDHUAxqpvijRPmeZvjYguMk74rH27DB+vQa4r9w=",
   udp: true,
