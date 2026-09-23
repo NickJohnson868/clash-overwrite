@@ -76,19 +76,6 @@ const LISA_DE_02 = {
   "client-fingerprint": "chrome",
 };
 
-// 固定节点：AnyTLS（Lisa-US-01）
-const LISA_US_01 = {
-  name: "Lisa-US-01-AnyTLS",
-  type: "anytls",
-  server: "192.204.60.246",
-  port: 443,
-  password: "17usYQiDzgMQaocgbB7xlSme",
-  sni: "www.cloudflare.com",
-  "client-fingerprint": "chrome",
-  "skip-cert-verify": true,
-  udp: true,
-};
-
 // 固定节点：VLESS + Reality（Lisa-US-02-Reality）
 const LISA_US_02 = {
   name: "Lisa-US-02-Reality",
@@ -106,60 +93,6 @@ const LISA_US_02 = {
     "short-id": "b426d3226bc3a76d",
   },
   "client-fingerprint": "chrome",
-};
-
-// 固定节点：Hysteria2 + obfs-salamander（Lisa-US-03-Hysteria2）
-const LISA_US_03 = {
-  name: "Lisa-US-03-Hysteria2",
-  type: "hysteria2",
-  server: "192.204.60.246",
-  port: 443,
-  password: "YlYFXFWBLQBsm6kfDcOZcV",
-  obfs: "salamander",
-  "obfs-password": "05701e75d41a6ee2fceeb4c78462",
-  sni: "www.cloudflare.com",
-  "skip-cert-verify": true,
-  udp: true,
-};
-
-// 固定节点：Shadowsocks-2022（Lisa-US-04-SS2022）
-const LISA_US_04 = {
-  name: "Lisa-US-04-SS2022",
-  type: "ss",
-  server: "192.204.60.246",
-  port: 80,
-  cipher: "2022-blake3-aes-256-gcm",
-  password: "3JGXFDHUAxqpvijRPmeZvjYguMk74rH27DB+vQa4r9w=",
-  udp: true,
-};
-
-// 固定节点：Trojan + TLS（Lisa-US-05-Trojan）
-const LISA_US_05 = {
-  name: "Lisa-US-05-Trojan",
-  type: "trojan",
-  server: "192.204.60.246",
-  port: 2053,
-  password: "bzlt6Aj6NNR23Xd0G984Fe1K",
-  sni: "www.cloudflare.com",
-  "skip-cert-verify": true,
-  udp: true,
-  "client-fingerprint": "chrome",
-};
-
-// 固定节点：TUIC v5（Lisa-US-06-TUIC）
-const LISA_US_06 = {
-  name: "Lisa-US-06-TUIC",
-  type: "tuic",
-  server: "192.204.60.246",
-  port: 2053,
-  uuid: "330a68da-3791-4826-a08a-391f9d1ccc84",
-  password: "VfxuLL2Zktg2DOp1hruchSv3",
-  sni: "www.cloudflare.com",
-  "skip-cert-verify": true,
-  alpn: ["h3"],
-  udp: true,
-  "congestion-controller": "bbr",
-  "udp-relay-mode": "native",
 };
 
 const BOOTSNET_PROCESS_RULES = [
@@ -411,18 +344,6 @@ const main = (config, profileName) => {
     );
   }
 
-  // 加入 Lisa 美国 AnyTLS 节点
-  if (
-    !config.proxies.some(
-      (p) =>
-        p.name === LISA_US_01.name
-    )
-  ) {
-    config.proxies.push(
-      LISA_US_01
-    );
-  }
-
   // 加入 Lisa 美国 VLESS + Reality 节点
   if (
     !config.proxies.some(
@@ -432,54 +353,6 @@ const main = (config, profileName) => {
   ) {
     config.proxies.push(
       LISA_US_02
-    );
-  }
-
-  // 加入 Lisa 美国 Hysteria2 节点
-  if (
-    !config.proxies.some(
-      (p) =>
-        p.name === LISA_US_03.name
-    )
-  ) {
-    config.proxies.push(
-      LISA_US_03
-    );
-  }
-
-  // 加入 Lisa 美国 Shadowsocks-2022 节点
-  if (
-    !config.proxies.some(
-      (p) =>
-        p.name === LISA_US_04.name
-    )
-  ) {
-    config.proxies.push(
-      LISA_US_04
-    );
-  }
-
-  // 加入 Lisa 美国 Trojan 节点
-  if (
-    !config.proxies.some(
-      (p) =>
-        p.name === LISA_US_05.name
-    )
-  ) {
-    config.proxies.push(
-      LISA_US_05
-    );
-  }
-
-  // 加入 Lisa 美国 TUIC 节点
-  if (
-    !config.proxies.some(
-      (p) =>
-        p.name === LISA_US_06.name
-    )
-  ) {
-    config.proxies.push(
-      LISA_US_06
     );
   }
 
@@ -511,12 +384,7 @@ const main = (config, profileName) => {
   proxyNames = uniq([
     ...proxyNames,
     LISA_DE_02.name,
-    LISA_US_01.name,
     LISA_US_02.name,
-    LISA_US_03.name,
-    LISA_US_04.name,
-    LISA_US_05.name,
-    LISA_US_06.name,
     BOOTSNET.name,
   ]);
 
@@ -537,12 +405,7 @@ const main = (config, profileName) => {
 
       proxies: [
         LISA_DE_02.name,
-        LISA_US_01.name,
         LISA_US_02.name,
-        LISA_US_03.name,
-        LISA_US_04.name,
-        LISA_US_05.name,
-        LISA_US_06.name,
       ],
 
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AI.png",
