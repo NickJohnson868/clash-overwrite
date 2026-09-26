@@ -34,8 +34,7 @@ const customDomainRules = [
 
   "IP-CIDR,8.148.247.44/32,直连,no-resolve",
   "IP-CIDR,8.211.168.130/32,直连,no-resolve",
-  "IP-CIDR,192.204.60.246/32,直连,no-resolve",
-  "IP-CIDR,82.139.234.157/32,直连,no-resolve"
+  "IP-CIDR,192.204.60.246/32,直连,no-resolve"
 ];
 
 const ruleOptions = {
@@ -57,44 +56,6 @@ const BOOTSNET = {
   udp: true,
 };
 
-// 固定节点：VLESS + Reality（Lisa-DE-VLESS）
-const LISA_DE_02 = {
-  name: "Lisa-DE-VLESS",
-  type: "vless",
-  server: "82.139.234.157",
-  port: 443,
-  uuid: "c17caf67-c72f-4ad8-b921-2b565a2d534c",
-  udp: true,
-  tls: true,
-  servername: "www.cloudflare.com",
-  flow: "xtls-rprx-vision",
-  network: "tcp",
-  "reality-opts": {
-    "public-key": "wu35CS3HMGYvpBTQvnrcOskq3yjg-8tsQvOoGMY-ghc",
-    "short-id": "ca51bf1a47a340bd",
-  },
-  "client-fingerprint": "chrome",
-};
-
-// 固定节点：VLESS + Reality（Lisa-US-VLESS）
-const LISA_US_02 = {
-  name: "Lisa-US-VLESS",
-  type: "vless",
-  server: "192.204.60.246",
-  port: 8443,
-  uuid: "3e9aedce-fefd-40b4-ae7c-2558fdbaff86",
-  udp: true,
-  tls: true,
-  servername: "www.microsoft.com",
-  flow: "xtls-rprx-vision",
-  network: "tcp",
-  "reality-opts": {
-    "public-key": "VK1-i3iAoZ6ra40jrw46flXyoVlg-oG1brTfOjdIIHY",
-    "short-id": "b426d3226bc3a76d",
-  },
-  "client-fingerprint": "chrome",
-};
-
 // Fixed node: Hysteria 2 with pinned certificate.
 const LISA_US_HY2 = {
   "name": "Lisa-US-Hysteria2",
@@ -103,6 +64,7 @@ const LISA_US_HY2 = {
   "port": 443,
   "password": "vKaoGg0sAvlCApnJu_P6sWGAfZJaLzO4-tG9yu1EBls",
   "udp": true,
+  "down": "80 Mbps",
   "sni": "lisa-us-hysteria2",
   "fingerprint": "991767d77316ac13f4acdd0995be1d395b334592908b3c543898f63e9e2cee8f",
   "skip-cert-verify": false,
@@ -348,30 +310,6 @@ const main = (config, profileName) => {
 
   initBaseConfig(config);
 
-  // 加入 Lisa 德国节点
-  if (
-    !config.proxies.some(
-      (p) =>
-        p.name === LISA_DE_02.name
-    )
-  ) {
-    config.proxies.push(
-      LISA_DE_02
-    );
-  }
-
-  // 加入 Lisa 美国 VLESS + Reality 节点
-  if (
-    !config.proxies.some(
-      (p) =>
-        p.name === LISA_US_02.name
-    )
-  ) {
-    config.proxies.push(
-      LISA_US_02
-    );
-  }
-
   // 加入直连节点
   if (
     !config.proxies.some(
@@ -403,8 +341,6 @@ const main = (config, profileName) => {
 
   proxyNames = uniq([
     ...proxyNames,
-    LISA_DE_02.name,
-    LISA_US_02.name,
     LISA_US_HY2.name,
     BOOTSNET.name,
   ]);
@@ -425,8 +361,6 @@ const main = (config, profileName) => {
       type: "select",
 
       proxies: [
-        LISA_DE_02.name,
-        LISA_US_02.name,
         LISA_US_HY2.name,
       ],
 
