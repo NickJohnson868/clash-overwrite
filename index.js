@@ -57,9 +57,9 @@ const BOOTSNET = {
   udp: true,
 };
 
-// 固定节点：VLESS + Reality（Lisa-DE-02）
+// 固定节点：VLESS + Reality（Lisa-DE-VLESS）
 const LISA_DE_02 = {
-  name: "Lisa-DE-02",
+  name: "Lisa-DE-VLESS",
   type: "vless",
   server: "82.139.234.157",
   port: 443,
@@ -76,9 +76,9 @@ const LISA_DE_02 = {
   "client-fingerprint": "chrome",
 };
 
-// 固定节点：VLESS + Reality（Lisa-US-02-Reality）
+// 固定节点：VLESS + Reality（Lisa-US-VLESS）
 const LISA_US_02 = {
-  name: "Lisa-US-02-Reality",
+  name: "Lisa-US-VLESS",
   type: "vless",
   server: "192.204.60.246",
   port: 8443,
@@ -93,6 +93,22 @@ const LISA_US_02 = {
     "short-id": "b426d3226bc3a76d",
   },
   "client-fingerprint": "chrome",
+};
+
+// Fixed node: Hysteria 2 with pinned certificate.
+const LISA_US_HY2 = {
+  "name": "Lisa-US-Hysteria2",
+  "type": "hysteria2",
+  "server": "192.204.60.246",
+  "port": 443,
+  "password": "vKaoGg0sAvlCApnJu_P6sWGAfZJaLzO4-tG9yu1EBls",
+  "udp": true,
+  "sni": "lisa-us-hysteria2",
+  "fingerprint": "991767d77316ac13f4acdd0995be1d395b334592908b3c543898f63e9e2cee8f",
+  "skip-cert-verify": false,
+  "alpn": [
+    "h3"
+  ]
 };
 
 const BOOTSNET_PROCESS_RULES = [
@@ -381,10 +397,15 @@ const main = (config, profileName) => {
     );
   }
 
+  if (!config.proxies.some((p) => p.name === LISA_US_HY2.name)) {
+    config.proxies.push(LISA_US_HY2);
+  }
+
   proxyNames = uniq([
     ...proxyNames,
     LISA_DE_02.name,
     LISA_US_02.name,
+    LISA_US_HY2.name,
     BOOTSNET.name,
   ]);
 
@@ -406,6 +427,7 @@ const main = (config, profileName) => {
       proxies: [
         LISA_DE_02.name,
         LISA_US_02.name,
+        LISA_US_HY2.name,
       ],
 
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AI.png",
