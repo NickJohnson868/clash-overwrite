@@ -56,21 +56,23 @@ const BOOTSNET = {
   udp: true,
 };
 
-// Fixed node: Hysteria 2 with pinned certificate.
-const LISA_US_HY2 = {
-  "name": "Lisa-US-Hysteria2",
-  "type": "hysteria2",
+// Fixed node: VLESS REALITY Vision; server TCP BBR enabled.
+const LISA_US_VLESS = {
+  "name": "Lisa-US-VLESS",
+  "type": "vless",
   "server": "192.204.60.246",
-  "port": 443,
-  "password": "vKaoGg0sAvlCApnJu_P6sWGAfZJaLzO4-tG9yu1EBls",
+  "port": 8443,
+  "uuid": "3e9aedce-fefd-40b4-ae7c-2558fdbaff86",
   "udp": true,
-  "down": "80 Mbps",
-  "sni": "lisa-us-hysteria2",
-  "fingerprint": "991767d77316ac13f4acdd0995be1d395b334592908b3c543898f63e9e2cee8f",
-  "skip-cert-verify": false,
-  "alpn": [
-    "h3"
-  ]
+  "tls": true,
+  "servername": "www.microsoft.com",
+  "flow": "xtls-rprx-vision",
+  "network": "tcp",
+  "reality-opts": {
+    "public-key": "VK1-i3iAoZ6ra40jrw46flXyoVlg-oG1brTfOjdIIHY",
+    "short-id": "b426d3226bc3a76d"
+  },
+  "client-fingerprint": "chrome"
 };
 
 const BOOTSNET_PROCESS_RULES = [
@@ -335,13 +337,13 @@ const main = (config, profileName) => {
     );
   }
 
-  if (!config.proxies.some((p) => p.name === LISA_US_HY2.name)) {
-    config.proxies.push(LISA_US_HY2);
+  if (!config.proxies.some((p) => p.name === LISA_US_VLESS.name)) {
+    config.proxies.push(LISA_US_VLESS);
   }
 
   proxyNames = uniq([
     ...proxyNames,
-    LISA_US_HY2.name,
+    LISA_US_VLESS.name,
     BOOTSNET.name,
   ]);
 
@@ -361,7 +363,7 @@ const main = (config, profileName) => {
       type: "select",
 
       proxies: [
-        LISA_US_HY2.name,
+        LISA_US_VLESS.name,
       ],
 
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AI.png",
