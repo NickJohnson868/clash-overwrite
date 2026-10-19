@@ -2433,6 +2433,8 @@ const main = (config, profileName) => {
     "PROCESS-NAME,tailscaled.exe,DIRECT",
     "PROCESS-NAME,tailscale.exe,DIRECT",
     "AND,((NETWORK,UDP),(DST-PORT,3478)),DIRECT",
+    // NTP time sync: also covers IP-only requests from Android system apps.
+    "AND,((NETWORK,UDP),(DST-PORT,123)),DIRECT",
     ...rules,
   ];
 
