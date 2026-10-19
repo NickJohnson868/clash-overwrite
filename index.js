@@ -2175,7 +2175,15 @@ const LISA_US_ADDITIONAL = [
     "name": "Lisa-US-Trojan",
     "type": "trojan",
     "port": 24402,
-    "password": "Dopy56Yx_9lrgaEOw7fuugDFjjzyfAgIGwaeRRNJ82o"
+    "password": "Dopy56Yx_9lrgaEOw7fuugDFjjzyfAgIGwaeRRNJ82o",
+    "smux": {
+      "enabled": true,
+      "protocol": "h2mux",
+      "max-connections": 4,
+      "min-streams": 4,
+      "only-tcp": true,
+      "padding": false
+    }
   },
   {
     "server": "192.204.60.246",
@@ -2221,7 +2229,7 @@ const LISA_US_ADDITIONAL = [
     "client-fingerprint": "chrome",
     "idle-session-check-interval": 30,
     "idle-session-timeout": 30,
-    "min-idle-session": 0
+    "min-idle-session": 1
   }
 ];
 
