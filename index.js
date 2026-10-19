@@ -2067,6 +2067,42 @@ const domesticAppDirectRules = [
   "DOMAIN-SUFFIX,xn--fiqz9s,直连",
 ];
 
+// Google Play download/API exceptions must precede China suffix and GeoIP rules.
+// https://support.google.com/work/android/answer/10513641
+const GOOGLE_PLAY_SUFFIXES = [
+  "gvt1.com", "gvt2.com", "gvt3.com", "gvt1-cn.com", "gvt2-cn.com",
+  "googleplay.com", "googleusercontent.com", "ggpht.com", "gstatic.com",
+  "xn--ngstr-lra8j.com",
+];
+const GOOGLE_PLAY_HOSTS = [
+  "play.google.com", "dl.google.com", "dl-ssl.google.com",
+  "accounts.google.com", "android.clients.google.com",
+  "android.apis.google.com", "android.googleapis.com",
+  "play.googleapis.com", "play-fe.googleapis.com",
+  "fcm.googleapis.com", "mtalk.google.com",
+  "services.googleapis.cn", "android.googleapis.cn",
+];
+const getGooglePlayRules = () => ruleOptions.google ? [
+  ...GOOGLE_PLAY_HOSTS.map((host) => "DOMAIN," + host + ",谷歌服务"),
+  ...GOOGLE_PLAY_SUFFIXES.map((host) => "DOMAIN-SUFFIX," + host + ",谷歌服务"),
+] : [];
+
+function configureGooglePlayDns(config) {
+  if (!ruleOptions.google || !config.dns?.enable) return;
+  const dns = config.dns;
+  const policy = { ...(dns["nameserver-policy"] || {}) };
+  const resolvers = ["https://8.8.8.8/dns-query#谷歌服务", "https://1.1.1.1/dns-query#谷歌服务"];
+  for (const host of GOOGLE_PLAY_SUFFIXES) policy["+." + host] = resolvers;
+  for (const host of GOOGLE_PLAY_HOSTS) policy[host] = resolvers;
+  // Node hostnames must resolve without recursively using the selected proxy.
+  config.dns = {
+    ...dns,
+    "proxy-server-nameserver": dns["proxy-server-nameserver"]?.length
+      ? dns["proxy-server-nameserver"] : ["223.5.5.5", "119.29.29.29"],
+    "nameserver-policy": policy,
+  };
+}
+
 const ruleOptions = {
   domestic: true,
   foreign: true,
@@ -2427,6 +2463,7 @@ const main = (config, profileName) => {
   );
 
   registerServices(config);
+  configureGooglePlayDns(config);
 
   // Tailscale must discover the real WAN endpoint instead of the proxy exit.
   config.rules = [
@@ -2435,6 +2472,7 @@ const main = (config, profileName) => {
     "AND,((NETWORK,UDP),(DST-PORT,3478)),DIRECT",
     // NTP time sync: also covers IP-only requests from Android system apps.
     "AND,((NETWORK,UDP),(DST-PORT,123)),DIRECT",
+    ...getGooglePlayRules(),
     ...rules,
   ];
 
