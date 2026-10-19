@@ -2157,6 +2157,76 @@ const LISA_US_VLESS = {
   "client-fingerprint": "chrome"
 };
 
+const LISA_US_ADDITIONAL = [
+  {
+    "server": "192.204.60.246",
+    "udp": true,
+    "name": "Lisa-US-Shadowsocks2022",
+    "type": "ss",
+    "port": 24401,
+    "cipher": "2022-blake3-aes-128-gcm",
+    "password": "Qd4qtsCcZ1rbkMrOiQ1oxg=="
+  },
+  {
+    "server": "192.204.60.246",
+    "udp": true,
+    "sni": "192.204.60.246",
+    "skip-cert-verify": false,
+    "name": "Lisa-US-Trojan",
+    "type": "trojan",
+    "port": 24402,
+    "password": "Dopy56Yx_9lrgaEOw7fuugDFjjzyfAgIGwaeRRNJ82o"
+  },
+  {
+    "server": "192.204.60.246",
+    "udp": true,
+    "name": "Lisa-US-VMess",
+    "type": "vmess",
+    "port": 24403,
+    "uuid": "0b0cbf2c-d948-4831-90ec-a2efce4538e2",
+    "alterId": 0,
+    "cipher": "auto",
+    "tls": true,
+    "servername": "192.204.60.246",
+    "skip-cert-verify": false,
+    "network": "tcp"
+  },
+  {
+    "server": "192.204.60.246",
+    "udp": true,
+    "sni": "192.204.60.246",
+    "skip-cert-verify": false,
+    "name": "Lisa-US-TUIC",
+    "type": "tuic",
+    "port": 24404,
+    "uuid": "74ba3080-119d-47bf-aefc-5c4be3f245a6",
+    "password": "PIhDTiOJF04yCdf3TpUB5IjKHtGz9vx1HY4IXpMYHTg",
+    "alpn": [
+      "h3"
+    ],
+    "congestion-controller": "bbr",
+    "udp-relay-mode": "native",
+    "heartbeat-interval": 10000,
+    "reduce-rtt": false
+  },
+  {
+    "server": "192.204.60.246",
+    "udp": true,
+    "sni": "192.204.60.246",
+    "skip-cert-verify": false,
+    "name": "Lisa-US-AnyTLS",
+    "type": "anytls",
+    "port": 24405,
+    "password": "VzEbfHQz4NwnpPwjpdbRCkiVZsJYCI7ycOlZ8kj2eFk",
+    "client-fingerprint": "chrome",
+    "idle-session-check-interval": 30,
+    "idle-session-timeout": 30,
+    "min-idle-session": 0
+  }
+];
+
+const LISA_US_NODES = [LISA_US_HY2, LISA_US_VLESS, ...LISA_US_ADDITIONAL];
+
 const BOOTSNET_PROCESS_RULES = [
   "PROCESS-NAME,BootsNet.exe,DIRECT",
   "PROCESS-NAME,bootsnet.exe,DIRECT",
@@ -2419,17 +2489,15 @@ const main = (config, profileName) => {
     );
   }
 
-  if (!config.proxies.some((p) => p.name === LISA_US_HY2.name)) {
-    config.proxies.push(LISA_US_HY2);
-  }
-  if (!config.proxies.some((p) => p.name === LISA_US_VLESS.name)) {
-    config.proxies.push(LISA_US_VLESS);
+  for (const node of LISA_US_NODES) {
+    if (!config.proxies.some((p) => p.name === node.name)) {
+      config.proxies.push(node);
+    }
   }
 
   proxyNames = uniq([
     ...proxyNames,
-    LISA_US_HY2.name,
-    LISA_US_VLESS.name,
+    ...LISA_US_NODES.map((p) => p.name),
     BOOTSNET.name,
   ]);
 
@@ -2449,8 +2517,7 @@ const main = (config, profileName) => {
       type: "select",
 
       proxies: [
-        LISA_US_HY2.name,
-        LISA_US_VLESS.name,
+        ...LISA_US_NODES.map((p) => p.name),
       ],
 
       icon: "https://fastly.jsdelivr.net/gh/Koolson/Qure/IconSet/Color/AI.png",
