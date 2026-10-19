@@ -2161,15 +2161,6 @@ const LISA_US_ADDITIONAL = [
   {
     "server": "192.204.60.246",
     "udp": true,
-    "name": "Lisa-US-Shadowsocks2022",
-    "type": "ss",
-    "port": 24401,
-    "cipher": "2022-blake3-aes-128-gcm",
-    "password": "Qd4qtsCcZ1rbkMrOiQ1oxg=="
-  },
-  {
-    "server": "192.204.60.246",
-    "udp": true,
     "sni": "192.204.60.246",
     "skip-cert-verify": false,
     "name": "Lisa-US-Trojan",
@@ -2470,6 +2461,8 @@ const main = (config, profileName) => {
   config.proxies =
     config.proxies || [];
 
+  // Remove only the retired self-hosted node, including from cached input profiles.
+  config.proxies = (config.proxies || []).filter((p) => p.name !== "Lisa-US-Shadowsocks2022");
   initBaseConfig(config);
 
   // 加入直连节点
