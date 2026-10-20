@@ -37,7 +37,7 @@ Nginx 站点配置为 `/etc/nginx/sites-available/clash-overwrite`；普通首�
 | `Lisa-US-Trojan` | TCP 24402 | TLS；服务端 `multiplex.enabled: true`、`padding: false`；客户端仅 TCP 启用 h2mux，参数见下文 |
 | `Lisa-US-VMess` | TCP 24403 | TLS、`network: tcp`、`alterId: 0`、`cipher: auto`；不启用额外 smux |
 | `Lisa-US-TUIC` | UDP 24404 | TUIC v5（UUID + 独立密码）；两端 BBR、10 秒心跳、禁用 0-RTT，参数见下文 |
-| `Lisa-US-AnyTLS` | TCP 24405 | TLS、`client-fingerprint: chrome`；空闲检查 30 秒、超时 30 秒、`min-idle-session: 1` |
+| `Lisa-US-AnyTLS` | TCP 24405 | TLS、`client-fingerprint: chrome`；空闲检查 30 秒、超时 120 秒、`min-idle-session: 1` |
 
 `LISA_US_ADDITIONAL` 定义新增四节点，`LISA_US_NODES` 汇总六节点；由循环注入 `config.proxies`，Lisa 与自选/服务分组引用同一节点名称集合。保留现有协议名以维持客户端保存的选择。`main` 会精确过滤旧的 `Lisa-US-Shadowsocks2022`，避免缓存输入重新带回退役节点，不按 `type: ss` 过滤整份订阅。
 
@@ -72,9 +72,19 @@ smux:
 
 对应 Trojan 服务端入站：`multiplex: {"enabled": true, "padding": false}`。不要同时填写与 `max-connections`、`min-streams` 冲突的 `max-streams`；未启用 TCP Brutal，也没有安装该内核模块。`only-tcp: true` 保留原 UDP 传输方式。服务端验证兼容未开启 smux 的旧 Trojan 客户端，回退时先关闭客户端 smux，再评估是否关闭服务端支持。
 
-AnyTLS 保留原 `idle-session-check-interval: 30` 和 `idle-session-timeout: 30`，仅将 `min-idle-session` 从 0 改为 1，用于保留一条空闲会话；没有叠加额外 smux。它改善的是闲置后重用，不是提高带宽上限。
+AnyTLS 首轮优化保留 `idle-session-check-interval: 30` 和 `idle-session-timeout: 30`，将 `min-idle-session` 从 0 改为 1（后续连接保活调整将 timeout 延长至 120 秒，见下节），用于保留一条空闲会话；没有叠加额外 smux。它改善的是闲置后重用，不是提高带宽上限。
 
 TUIC 服务端：`congestion_control: bbr`、`heartbeat: "10s"`、`zero_rtt_handshake: false`。客户端：`congestion-controller: bbr`、`heartbeat-interval: 10000`（毫秒）、`reduce-rtt: false`、`udp-relay-mode: native`、`alpn: [h3]`。不要把两端参数名和心跳单位混用。
+
+### 连接保活调整（2026-10-20）
+
+- 客户端全局 `keep-alive-idle: 60`、`keep-alive-interval: 30`、`disable-keep-alive: false`，替换原 1800 秒探测间隔。单位为秒。Mihomo 官方说明 Android 强制禁用客户端 TCP keepalive，因此手机上的实际收益不能仅根据这些字段推断；同时设置服务端 TCP 入站保活。
+- VLESS、Trojan、VMess、AnyTLS 服务端 TCP 入站增加 `tcp_keep_alive: "60s"`、`tcp_keep_alive_interval: "30s"`。不修改 Hysteria2/TUIC 的 QUIC 心跳、拥塞算法和缓冲区，不修改内核全局 TCP keepalive 默认值。
+- AnyTLS 客户端 `idle-session-timeout` 从 30 延长为 120 秒，`idle-session-check-interval: 30`、`min-idle-session: 1` 保留。更长时间保留额外空闲会话，目标是减少短时闲置后的重建；并非提前建立两个会话，也不承诺提高首次连接或下载速度。同步受保护的 `client-nodes.json`。
+- 使用临时 AnyTLS 入站对照 Fast Open：关闭三次冷请求 1.109/1.047/1.031 秒，开启三次 0.938/0.937/1.203 秒，但服务器 TCPFastOpenPassive/Active 都是 0，无法证明实际生效，故未采用；实验内核 `tcp_fastopen` 已恢复原值 1，临时监听已删除。
+- 物理网卡绑定测试到服务器 TCP RTT 约 203–281 ms，TLS 额外约 219–266 ms；当前参数不改变跨境 BGP 路由。Windows TUN 下普通 socket 的近零 TCP 时间不可当作真实 RTT。
+- 本次加载后六协议各完成 3 次 YouTube HTTPS 204 请求（18/18 成功），两套服务与 Nginx 均 active；`ss -ton` 观察到新连接 keepalive 约 30 秒定时器。完整生成配置与旧版本对比，仅预期的保活和 AnyTLS 字段变化，DNS/规则/分组/认证及此前加速参数一致；服务器 HTTPS 下载与本地脚本逐字节一致。旧连接可能仍保留旧 timer，客户端更新应用后检查新连接。
+- 保活与延长会话的收益需长期闲置/真实手机使用验证；配置解析和短请求成功不能证明 NAT 存活或根治断线。回退只撤销本节字段并恢复 AnyTLS 30 秒，保留此前 BBR、Trojan h2mux 等设置。
 
 ### 对照结果与未采用的实验
 

@@ -2219,7 +2219,7 @@ const LISA_US_ADDITIONAL = [
     "password": "VzEbfHQz4NwnpPwjpdbRCkiVZsJYCI7ycOlZ8kj2eFk",
     "client-fingerprint": "chrome",
     "idle-session-check-interval": 30,
-    "idle-session-timeout": 30,
+    "idle-session-timeout": 120,
     "min-idle-session": 1
   }
 ];
@@ -2386,7 +2386,10 @@ function initBaseConfig(config) {
 
     "unified-delay": true,
     "tcp-concurrent": true,
-    "keep-alive-interval": 1800,
+    // Preserve reusable TCP sessions across idle periods (seconds).
+    "keep-alive-idle": 60,
+    "keep-alive-interval": 30,
+    "disable-keep-alive": false,
     "find-process-mode": "strict",
 
     "geodata-mode": true,
