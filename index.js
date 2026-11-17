@@ -2521,6 +2521,7 @@ const main = (config, profileName) => {
       type: "select",
 
       proxies: [
+        "自选节点",
         ...LISA_US_NODES.map((p) => p.name),
       ],
 
